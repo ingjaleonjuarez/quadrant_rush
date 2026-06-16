@@ -1,0 +1,6 @@
+End Screen actualizado:
+- 3 bloques separados
+- score protagonista
+- mensaje SJ independiente
+- leaderboard separado
+- mayor respiración visual
