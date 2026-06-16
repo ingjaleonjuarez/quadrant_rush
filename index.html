@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quadrant Rush Promotion Edition</title>
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<!-- LANDING -->
+<div class="panel active" id="landingPanel">
+  <h1>Preparatoria Sor Juana</h1>
+  <h1>PRESENTA</h1>
+  <h2>Quadrant Rush</h2>
+  <p>Una experiencia inspirada en nuevas formas de aprender.</p>
+  <button id="playBtn">JUGAR</button>
+</div>
+
+<!-- NAME -->
+<div class="panel" id="namePanel">
+  <h1>INGRESA TU NOMBRE</h1>
+  <p>Demuestra tus reflejos en los 4 cuadrantes.</p>
+  <input id="playerInput" maxlength="12" placeholder="Nombre del jugador">
+  <button id="continueBtn">COMENZAR</button>
+</div>
+
+<!-- HOOK -->
+<div class="panel" id="hookPanel">
+  <h1>¿PUEDES DOMINAR LOS 4 CUADRANTES?</h1>
+  <p>Captura las coordenadas correctas y supera tu récord.</p>
+  <button id="startMissionBtn">INICIAR MISIÓN</button>
+</div>
+
+<!-- END -->
+
+<div class="panel" id="endPanel">
+
+  <div class="endSequence active" id="endStep1">
+    <h1>MISIÓN FINALIZADA</h1>
+    <div id="finalInfo"></div>
+  </div>
+
+  <div class="endSequence" id="endStep2">
+    <p class="highlight">
+      Las matemáticas también pueden vivirse de forma interactiva.
+    </p>
+
+    <p>
+      Gracias por jugar Quadrant Rush.
+    </p>
+  </div>
+
+  <div class="endSequence" id="endStep3">
+    <div id="leaderboard"></div>
+
+<div id="signatureCredit">
+Desarrollo y adaptación digital:<br>
+José Antonio León Juárez
+</div>
+
+    <button id="playAgainBtn">JUGAR DE NUEVO</button>
+  </div>
+
+</div>
+
+
+<!-- GAME -->
+<div id="hud">
+  <div class="hudInfo">
+    <div class="hudBox" id="objective">CUADRANTE I</div>
+    <div class="hudBox" id="score">SCORE 0</div>
+    <div class="hudBox" id="combo">COMBO x0</div>
+    <div class="hudBox" id="timer">45</div>
+  </div>
+
+  <button id="restartBtn">⏻</button>
+</div>
+
+<canvas id="game"></canvas>
+
+<div id="overlay">
+  <div id="countdownNumber">3</div>
+</div>
+
+<script src="./js/game.js"></script>
+
+
+<div id="orientationOverlay">
+  <div class="orientationBox">
+    <div class="rotateIcon">📱</div>
+    <h2>Gira tu dispositivo</h2>
+    <p>para continuar la experiencia</p>
+  </div>
+</div>
+
+</body>
+</html>
