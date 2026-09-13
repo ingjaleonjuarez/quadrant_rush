@@ -1,6 +1,6 @@
 End Screen actualizado:
 - 3 bloques separados
 - score protagonista
-- mensaje SJ independiente
+- mensaje MEMO Studio independiente
 - leaderboard separado
 - mayor respiración visual
