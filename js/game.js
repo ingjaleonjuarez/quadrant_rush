@@ -2,11 +2,15 @@ const canvas=document.getElementById('game');
 const ctx=canvas.getContext('2d');
 
 function resize(){
-canvas.width=innerWidth;
-canvas.height=innerHeight;
+const size=getViewportSize();
+canvas.width=size.width;
+canvas.height=size.height;
 }
 resize();
 addEventListener('resize',resize);
+if(window.visualViewport){
+window.visualViewport.addEventListener('resize',resize);
+}
 
 const panels=document.querySelectorAll('.panel');
 
@@ -25,7 +29,8 @@ playing:false,
 bubbles:[],
 texts:[],
 timerInterval:null,
-audioCtx:null
+audioCtx:null,
+pendingMissionStart:false
 };
 
 const quadrants=['I','II','III','IV'];
@@ -79,6 +84,12 @@ showPanel('hookPanel');
 
 document.getElementById('startMissionBtn').onclick=()=>{
 
+if(shouldBlockForPortrait()){
+state.pendingMissionStart=true;
+showOrientationOverlay(true);
+return;
+}
+
 tone(880);
 
 document.getElementById('hookPanel').classList.remove('active');
@@ -86,6 +97,38 @@ document.getElementById('hookPanel').classList.remove('active');
 startCountdown();
 
 };
+
+
+function getViewportSize(){
+const viewport=window.visualViewport||window;
+return{
+width:Math.floor(viewport.width||window.innerWidth||document.documentElement.clientWidth),
+height:Math.floor(viewport.height||window.innerHeight||document.documentElement.clientHeight)
+};
+}
+
+function isTouchOrSmallScreen(){
+return (navigator.maxTouchPoints&&navigator.maxTouchPoints>0)||
+window.matchMedia('(pointer: coarse)').matches||
+Math.min(window.innerWidth,window.innerHeight)<=900;
+}
+
+function isPortraitViewport(){
+const size=getViewportSize();
+return size.height>=size.width;
+}
+
+function shouldBlockForPortrait(){
+return isTouchOrSmallScreen()&&isPortraitViewport();
+}
+
+function showOrientationOverlay(visible){
+const overlay=document.getElementById('orientationOverlay');
+if(!overlay)return;
+overlay.classList.toggle('active',visible);
+overlay.style.display=visible?'flex':'none';
+document.body.classList.toggle('orientationBlocked',visible);
+}
 
 function randCoord(){
 let n=0;
@@ -102,35 +145,80 @@ if(x<0&&y<0)return 3;
 if(x>0&&y<0)return 4;
 }
 
-function toScreen(x,y){
-const scale=54;
+function isMobileLandscape(){
+return window.innerWidth<=900 && window.innerWidth>window.innerHeight;
+}
+
+function getPlayArea(){
+const top=isMobileLandscape()?72:130;
+const bottom=isMobileLandscape()?24:30;
 return{
-x:canvas.width/2+x*scale,
-y:canvas.height/2-y*scale
+centerX:canvas.width/2,
+centerY:top+(canvas.height-top-bottom)/2,
+top,bottom
+};
+}
+
+function getScale(){
+const area=getPlayArea();
+const availableW=canvas.width-90;
+const availableH=canvas.height-area.top-area.bottom-50;
+return Math.max(18,Math.min(54,availableW/12,availableH/12));
+}
+
+function getBubbleRadius(){
+return isMobileLandscape()?34:42;
+}
+
+function toScreen(x,y){
+const scale=getScale();
+const area=getPlayArea();
+return{
+x:area.centerX+x*scale,
+y:area.centerY-y*scale
 };
 }
 
 function createBubble(){
 
-while(true){
+let attempts=0;
+const radius=getBubbleRadius();
+const area=getPlayArea();
+
+while(attempts<80){
+
+attempts++;
 
 const x=randCoord();
 const y=randCoord();
 
 const p=toScreen(x,y);
 
-if(p.y>130){
+const safeLeft=radius+12;
+const safeRight=canvas.width-radius-12;
+const safeTop=area.top+radius+6;
+const safeBottom=canvas.height-radius-12;
+
+if(p.x>safeLeft && p.x<safeRight && p.y>safeTop && p.y<safeBottom){
 
 return{
 x,y,
 q:getQuadrant(x,y),
-radius:42,
+radius,
 pulse:0
 };
 
 }
 
 }
+
+return{
+x:1,
+y:1,
+q:1,
+radius,
+pulse:0
+};
 
 }
 
@@ -192,17 +280,16 @@ ctx.moveTo(0,canvas.height/2);
 ctx.lineTo(canvas.width,canvas.height/2);
 ctx.stroke();
 
-ctx.globalAlpha=.05;
+ctx.globalAlpha=.09;
 ctx.fillStyle='#58f6ff';
-ctx.font='bold 220px Arial';
 ctx.textAlign='center';
+ctx.textBaseline='middle';
 
-ctx.font='bold 90px Arial';
-ctx.fillText('Preparatoria',canvas.width/2,canvas.height/2+10);
+const memoFontSize=Math.max(24,Math.min(42,canvas.width*0.045));
+ctx.font=`bold ${memoFontSize}px Arial`;
+ctx.fillText('MEMO Studio',canvas.width/2,canvas.height/2+18);
 
-ctx.font='bold 72px Arial';
-ctx.fillText('Sor Juana',canvas.width/2,canvas.height/2+95);
-
+ctx.textBaseline='alphabetic';
 ctx.globalAlpha=1;
 
 }
@@ -217,7 +304,7 @@ const radius=b.radius+Math.sin(b.pulse)*5;
 
 b.screenX=p.x;
 b.screenY=p.y;
-b.hitRadius=radius;
+b.hitRadius=radius+(isMobileLandscape()?12:0);
 
 ctx.beginPath();
 ctx.arc(p.x,p.y,radius,0,Math.PI*2);
@@ -323,9 +410,11 @@ updateHUD();
 
 }
 
-canvas.addEventListener('click',(e)=>{
+function handlePointer(e){
 
 if(!state.playing)return;
+
+e.preventDefault();
 
 const rect=canvas.getBoundingClientRect();
 
@@ -348,9 +437,17 @@ return;
 
 }
 
-});
+}
+
+canvas.addEventListener('pointerdown',handlePointer,{passive:false});
 
 function startCountdown(){
+
+if(shouldBlockForPortrait()){
+state.pendingMissionStart=true;
+showOrientationOverlay(true);
+return;
+}
 
 const overlay=document.getElementById('overlay');
 const number=document.getElementById('countdownNumber');
@@ -369,7 +466,7 @@ c--;
 
 if(c<0){
 
-number.textContent='Preparatoria Sor Juana';
+number.innerHTML='<span class="memoStudioMark">MEMO Studio</span>';
 
 tone(880,0.08,'triangle');
 
@@ -390,6 +487,12 @@ clearInterval(interval);
 }
 
 function startGame(){
+
+if(shouldBlockForPortrait()){
+state.pendingMissionStart=true;
+showOrientationOverlay(true);
+return;
+}
 
 state.playing=true;
 state.score=0;
@@ -522,20 +625,31 @@ s3.classList.add('active');
 
 
 function checkOrientation(){
-
-const overlay=document.getElementById('orientationOverlay');
-
-const isMobile = window.innerWidth <= 900;
-
-if(isMobile && window.innerWidth > window.innerHeight){
-overlay.style.display='flex';
-}else{
-overlay.style.display='none';
+const blocked=shouldBlockForPortrait();
+showOrientationOverlay(blocked);
+return blocked;
 }
 
+function handleViewportChange(){
+resize();
+const blocked=checkOrientation();
+
+if(!blocked && state.pendingMissionStart){
+state.pendingMissionStart=false;
+tone(880);
+document.getElementById('hookPanel').classList.remove('active');
+startCountdown();
+}
 }
 
-window.addEventListener('resize',checkOrientation);
-window.addEventListener('orientationchange',checkOrientation);
+window.addEventListener('resize',handleViewportChange);
+window.addEventListener('orientationchange',()=>{
+setTimeout(handleViewportChange,80);
+setTimeout(handleViewportChange,260);
+});
+window.addEventListener('load',handleViewportChange);
+window.addEventListener('pageshow',handleViewportChange);
 
-setTimeout(checkOrientation,300);
+handleViewportChange();
+setTimeout(handleViewportChange,100);
+setTimeout(handleViewportChange,350);
