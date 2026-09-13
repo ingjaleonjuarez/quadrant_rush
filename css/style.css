@@ -16,7 +16,7 @@ color:white;
 canvas{
 display:block;
 cursor:pointer;
-touch-action:manipulation;
+touch-action:none;
 }
 
 .panel{
@@ -126,8 +126,20 @@ display:none;
 }
 
 #countdownNumber{
+
 font-size:6rem;
 font-weight:bold;
+line-height:1.1;
+text-align:center;
+}
+
+/* MI-ID-MEMO-01: marca MEMO Studio pequeña en el conteo inicial */
+#countdownNumber .memoStudioMark{
+font-size:clamp(1.35rem,5vw,2.25rem);
+letter-spacing:.08em;
+line-height:1.1;
+opacity:.92;
+text-shadow:0 0 18px rgba(88,246,255,.38);
 }
 
 #leaderboard{
@@ -231,8 +243,136 @@ margin:0;
 100%{transform:rotate(0deg);}
 }
 
-@media (orientation:landscape){
+@media (max-width:900px) and (orientation:portrait){
 #orientationOverlay{
 display:flex;
 }
+}
+
+@media (max-width:900px) and (orientation:landscape){
+body{
+width:100vw;
+height:100vh;
+overflow:hidden;
+}
+
+.panel{
+padding:12px 24px;
+gap:10px;
+}
+
+.panel h1{
+font-size:1.35rem;
+}
+
+.panel h2{
+font-size:2.2rem;
+}
+
+.panel p{
+font-size:.92rem;
+line-height:1.35;
+}
+
+button{
+padding:11px 22px;
+border-radius:15px;
+font-size:.92rem;
+}
+
+input{
+padding:11px;
+}
+
+#hud{
+top:max(8px, env(safe-area-inset-top));
+left:0;
+width:100%;
+padding:0 12px;
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:10px;
+}
+
+.hudInfo{
+flex:1;
+display:grid;
+grid-template-columns:repeat(4,minmax(0,1fr));
+gap:8px;
+max-width:none;
+}
+
+.hudBox{
+min-width:0;
+text-align:center;
+white-space:nowrap;
+font-size:.78rem;
+padding:8px 6px;
+border-radius:14px;
+}
+
+#restartBtn{
+width:50px;
+height:50px;
+font-size:1.35rem;
+flex:0 0 50px;
+}
+
+#countdownNumber{
+font-size:4.4rem;
+}
+
+.endSequence{
+width:min(92%,640px);
+padding:18px;
+gap:10px;
+}
+
+#finalInfo{
+font-size:1.05rem;
+line-height:1.55;
+}
+
+#leaderboard{
+font-size:.92rem;
+line-height:1.45;
+margin-top:4px;
+}
+
+#leaderboard h3{
+margin-bottom:8px;
+}
+
+#signatureCredit{
+margin-top:8px;
+font-size:.75rem;
+line-height:1.35;
+}
+}
+
+
+/* MI-MOB-H01b: bloqueo inicial robusto para celular vertical */
+html,body{
+width:100%;
+height:100%;
+}
+
+#orientationOverlay.active{
+display:flex !important;
+}
+
+body.orientationBlocked #hud,
+body.orientationBlocked #overlay{
+display:none !important;
+}
+
+body.orientationBlocked canvas{
+visibility:hidden;
+}
+
+/* MI-ID-MEMO-02: identidad global MEMO Studio en portada */
+.brandTitle{
+font-size:clamp(1.6rem,5vw,2.6rem);
+letter-spacing:.08em;
 }
