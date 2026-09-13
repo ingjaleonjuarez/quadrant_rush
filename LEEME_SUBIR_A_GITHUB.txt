@@ -1,0 +1,17 @@
+Quadrant Rush — MEMO Studio
+Paquete listo para GitHub Pages
+
+Instrucciones rápidas:
+1. Descomprime este ZIP.
+2. Sube el contenido de la carpeta descomprimida a la raíz del repositorio de GitHub.
+3. Asegúrate de que index.html quede directamente en la raíz del repositorio, no dentro de otra carpeta.
+4. En GitHub: Settings > Pages > Deploy from a branch > main > /root.
+5. Espera a que GitHub Pages publique la página y prueba desde celular en modo horizontal.
+
+Archivos principales:
+- index.html
+- css/style.css
+- js/game.js
+- .nojekyll
+
+Versión: MEMO Studio horizontal touch orientation fix
