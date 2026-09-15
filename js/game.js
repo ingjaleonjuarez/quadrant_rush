@@ -167,7 +167,9 @@ return Math.max(18,Math.min(54,availableW/12,availableH/12));
 }
 
 function getBubbleRadius(){
-return isMobileLandscape()?34:42;
+// MI-QR-01: esfera visible más proporcionada en celular horizontal.
+// Se reduce solo el radio visual; el área táctil se conserva cómoda en drawBubble().
+return isMobileLandscape()?26:42;
 }
 
 function toScreen(x,y){
@@ -300,28 +302,29 @@ const p=toScreen(b.x,b.y);
 
 b.pulse+=0.08;
 
-const radius=b.radius+Math.sin(b.pulse)*5;
+const pulseRange=isMobileLandscape()?3:5;
+const radius=b.radius+Math.sin(b.pulse)*pulseRange;
 
 b.screenX=p.x;
 b.screenY=p.y;
-b.hitRadius=radius+(isMobileLandscape()?12:0);
+b.hitRadius=radius+(isMobileLandscape()?14:0);
 
 ctx.beginPath();
 ctx.arc(p.x,p.y,radius,0,Math.PI*2);
 
 ctx.fillStyle=b.q===state.targetQuadrant?'#58f6ff':'#ff9755';
 
-ctx.shadowBlur=28;
+ctx.shadowBlur=isMobileLandscape()?20:28;
 ctx.shadowColor=ctx.fillStyle;
 
 ctx.fill();
 
 ctx.strokeStyle='white';
-ctx.lineWidth=3;
+ctx.lineWidth=isMobileLandscape()?2.4:3;
 ctx.stroke();
 
 ctx.fillStyle='#061018';
-ctx.font='bold 18px Arial';
+ctx.font=`bold ${isMobileLandscape()?14:18}px Arial`;
 ctx.textAlign='center';
 
 ctx.fillText(`(${b.x},${b.y})`,p.x,p.y+6);
