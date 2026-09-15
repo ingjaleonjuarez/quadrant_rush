@@ -1,0 +1,17 @@
+MI-QR-01 · Ajuste visual de esferas en móvil
+
+Cambios aplicados:
+- Reducción del radio visual de las esferas en celular horizontal: 34 -> 26.
+- Reducción del pulso visual en celular horizontal: +/-5 -> +/-3.
+- Conservación de área táctil cómoda mediante hitRadius ampliado.
+- Ajuste proporcional de texto, contorno y brillo de las esferas en móvil.
+
+No se modificó:
+- Mecánica de puntuación.
+- Tiempo.
+- Combo.
+- Ranking.
+- Orientación horizontal.
+- Control táctil.
+- Identidad MEMO Studio.
+- Esferas rojas de penalización.
